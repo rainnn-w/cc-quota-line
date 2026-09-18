@@ -1,0 +1,24 @@
+{
+  "name": "cc-quota-line",
+  "version": "0.1.0",
+  "description": "Claude Code 多 Provider 余量状态栏(零依赖,本地安装)",
+  "type": "module",
+  "bin": {
+    "cc-quota-line": "src/cli/index.js"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test \"test/*.test.js\""
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "preferGlobal": true,
+  "private": true,
+  "license": "MIT"
+}
