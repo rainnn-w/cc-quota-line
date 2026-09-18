@@ -7,7 +7,6 @@ Claude Code 多 Provider 余量状态栏。根据 `~/.claude/settings.json` 中�
 ```
 GLM ▇▇▇▇▇▇▇░░░ 72% · W ▇▇▇░░░░░░░ 30% · ↻19:19 · glm-5.1
 MiniMax ▇▇▇░░░░░░░ 30% · W ▇▇▇▇░░░░░░ 44% · ↻21:05 · MiniMax-M3
-sduonline $8.42 left · claude-opus-4-6
 ```
 
 ## 功能
