@@ -31,16 +31,23 @@ sduonline · $8.42 left / $10 · claude-opus-4-6
 
 ## 安装
 
-需要 Node.js ≥ 18,然后三步:
+需要 Node.js ≥ 18:
 
 ```bash
-git clone https://github.com/rainnn-w/cc-quota-line.git
-cd cc-quota-line
-npm link          # 注册全局命令 cc-quota-line
+npm install -g cc-quota-line
 cc-quota-line install   # 接管状态栏
 ```
 
 重启 Claude Code,状态栏就会出现余量信息。
+
+也可以直接从源码安装:
+
+```bash
+git clone https://github.com/rainnn-w/cc-quota-line.git
+cd cc-quota-line
+npm link
+cc-quota-line install
+```
 
 > 如果状态栏已配置过其他脚本,install 会拒绝并提示;确认覆盖请用 `cc-quota-line install --force`,原配置会自动备份,uninstall 时还原。
 
@@ -111,7 +118,7 @@ cc-quota-line config reset --yes           # 全部恢复默认
 
 ```bash
 cc-quota-line uninstall   # 还原/移除 statusLine
-npm unlink -g cc-quota-line
+npm uninstall -g cc-quota-line
 ```
 
 ## License
