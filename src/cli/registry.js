@@ -18,6 +18,7 @@ export const COMMANDS = [
   { name: "commands", args: "[--json]", sideEffect: "read", summary: "列出全部命令" },
   { name: "help", args: " | -h [command]", sideEffect: "read", summary: "全量帮助;help <command> 聚焦帮助" },
   { name: "config", args: "show | set <key> <value> | unset <key> | reset [--yes]", sideEffect: "read/write", summary: "查看/修改配置(~/.claude/cc-quota-line.json)" },
+  { name: "configure", args: "", sideEffect: "write", summary: "交互式配置 TUI:实时预览所见即所得(交互模式移植自 deluo/glm-quota-line,MIT)" },
   { name: "check-update", args: "", sideEffect: "read", summary: "检查 npm registry 更新(本地包则提示当前版本)" },
 ];
 

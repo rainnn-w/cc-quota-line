@@ -7,6 +7,7 @@ import { queryQuota } from "../core/quota.js";
 import { buildViewModel } from "../core/status/viewModel.js";
 import { renderBlock, renderJson, renderLine } from "../core/status/format.js";
 import { runConfigCommand } from "./configCommand.js";
+import { runTUI } from "../tui/index.js";
 import { checkUpdate } from "./update.js";
 import { renderHelp, renderHelpFor } from "./help.js";
 import { renderCommands } from "./registry.js";
@@ -62,6 +63,10 @@ export function makeCommands(version, { scriptPath } = {}) {
       const out = runConfigCommand({ sub: _, configPath: CONFIG_PATH, flags });
       process.stdout.write(out);
       if (out.startsWith("错误")) process.exitCode = 1;
+    },
+
+    async configure() {
+      await runTUI({ configPath: CONFIG_PATH });
     },
 
     "check-update": async () => {

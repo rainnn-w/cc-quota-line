@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- 新增 `configure` 命令:交互式配置 TUI,顶部实时预览状态栏效果(额度进度条 + 余额两种形态),所见即所得。交互与预览模式移植自 deluo/glm-quota-line(MIT)。
+
 ## 0.1.0
 
 - 首个版本:由单文件 `statusline.mjs` 重构为多模块工程。

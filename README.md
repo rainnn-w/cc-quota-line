@@ -25,6 +25,7 @@ xxx · $8.42 left / $10 · claude-opus-4-6
 - **额度进度条**:5 小时窗口 + 周额度双段显示,余量越少颜色越警示(绿 → 黄 → 红)
 - **重置时间**:`↻19:19` 告诉你额度几点恢复
 - **余额显示**:按金额计费的站点直接显示剩余金额
+- **交互式配置**:`cc-quota-line configure` 打开 TUI,顶部实时预览状态栏效果,所见即所得
 - **智能缓存**:结果缓存 90 秒,状态栏刷新不狂打 API;查询失败自动退避
 - **安全托管**:install / uninstall 一条命令接管 `settings.json` 的 statusLine,不动你其他配置,随时还原
 - **零依赖**:只要 Node.js ≥ 18,不装任何 npm 包
@@ -68,12 +69,26 @@ cc-quota-line install
 
 ```bash
 cc-quota-line                          # 手动看一次(TTY 下多行展示)
+cc-quota-line configure               # 交互式配置(实时预览)
 cc-quota-line help                    # 全部命令
 ```
 
 ## 自定义配置
 
-配置存在 `~/.claude/cc-quota-line.json`,推荐用命令改(带校验、原子写入):
+配置存在 `~/.claude/cc-quota-line.json`。最舒服的方式是交互式配置——顶部实时预览状态栏效果,改什么立刻看到什么,所见即所得:
+
+```bash
+cc-quota-line configure   # 交互式配置,实时预览
+```
+
+![image-20260919111138213](https://cdn.jsdelivr.net/gh/rainnn-w/Pictures@main/blog/202609191111454.png)
+
+- `↑/↓` 选择配置项,`Space/→` 调整,`←` 反向调整;带 `*` 的项表示与默认值不同
+
+- `theme` / `bar-width` / `warn-threshold` / `low-threshold` 的改动会即时反映在预览里
+- `r` 恢复当前项默认值,`s` 保存,`q` 不保存退出(改过未保存会提示)
+
+也可以用命令行直接改(带校验、原子写入):
 
 ```bash
 cc-quota-line config set bar-width 14      # 进度条加宽
@@ -121,4 +136,4 @@ npm uninstall -g cc-quota-line
 
 ## License
 
-MIT
+MIT。交互式配置 TUI(`cc-quota-line configure`)的交互与预览模式移植自 [deluo/glm-quota-line](https://github.com/deluo/glm-quota-line)(MIT),已适配本项目的配置模型。

@@ -21,7 +21,8 @@ export function renderHelp(version) {
   }
   lines.push("");
   lines.push("配置键(cache-ttl-seconds / fail-backoff-seconds / bar-width / timeout-ms /");
-  lines.push("        warn-threshold / low-threshold / theme / debug)用 config set 修改。");
+  lines.push("        warn-threshold / low-threshold / theme / debug)用 config set 修改,");
+  lines.push("        或运行 configure 交互式配置(实时预览,所见即所得)。");
   return lines.join("\n");
 }
 
