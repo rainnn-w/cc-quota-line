@@ -7,14 +7,14 @@
 在用 GLM、MiniMax、Kimi、DeepSeek 或各种 new-api 中转站跑 Claude Code?额度什么时候用完、什么时候重置,总得切网页去查。装上 cc-quota-line,余量直接躺在状态栏里,一眼可见:
 
 ```
-GLM ▇▇▇▇▇▇▇░░░ 72% · W ▇▇▇░░░░░░░ 30% · ↻19:19 · glm-5.1
+GLM ▇▇▇▇▇▇▇░░░ 72% · W ▇▇▇░░░░░░░ 30% · ↻19:19 · glm-5.3
 MiniMax ▇▇▇░░░░░░░ 30% · W ▇▇▇▇░░░░░░ 44% · ↻21:05 · MiniMax-M3
 ```
 
 中转站按余额计费?显示剩余金额:
 
 ```
-sduonline · $8.42 left / $10 · claude-opus-4-6
+xxx · $8.42 left / $10 · claude-opus-4-6
 ```
 
 零依赖、零配置——装完即用,自动识别你当前的 Provider。
