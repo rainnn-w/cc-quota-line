@@ -59,10 +59,8 @@ cc-quota-line install
 |---|---|---|
 | GLM(智谱) | `bigmodel.cn` / `z.ai` | 5h + 周额度进度条、重置时间、等级 |
 | MiniMax | `minimaxi.com` / `minimax.io` 等 | 5h + 周额度进度条、重置时间 |
-| Kimi (Moonshot) | `moonshot.ai` / `moonshot.cn` / `kimi.com` | 剩余余额(¥) |
-| DeepSeek | `deepseek.com` | 剩余余额(¥) |
-| new-api / one-api 系中转站 | 其余全部自动按中转站尝试 | 剩余金额($,不限量站点显示已用量) |
-| Claude 官方 | `anthropic.com` | 提示 `run /usage`(官方无公开余量接口) |
+| new-api / one-api 系中转站 | 其余全部自动按中转站尝试         | 剩余金额($,不限量站点显示已用量)      |
+| Claude 官方                | `anthropic.com`                  | 提示 `run /usage`(官方无公开余量接口) |
 
 ## 日常使用
 

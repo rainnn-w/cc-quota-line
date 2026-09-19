@@ -8,7 +8,7 @@ export function classify(baseUrl) {
 
   const has = (...suffixes) => suffixes.some((s) => host === s || host.endsWith("." + s));
   if (has("bigmodel.cn", "z.ai")) return { key: "glm", label: "GLM" };
-  if (has("minimaxi.com", "minimax.io", "minimax.chat", "minimaxi.live")) return { key: "minimax", label: "MiniMax" };
+  if (has("minimaxi.com", "minimax.io", "minimax.chat", "minimaxi.live", "minimax.com")) return { key: "minimax", label: "MiniMax" };
   if (has("xiaomimimo.com")) return { key: "mimo", label: "MiMo" };
   if (has("moonshot.ai", "moonshot.cn", "kimi.com")) return { key: "moonshot", label: "Kimi" };
   if (has("deepseek.com")) return { key: "deepseek", label: "DeepSeek" };
