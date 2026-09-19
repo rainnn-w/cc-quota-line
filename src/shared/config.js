@@ -1,4 +1,5 @@
 import { CONFIG_KEYS, DEFAULT_CONFIG, READONLY_KEYS } from "./constants.js";
+import { isValidColor } from "./utils.js";
 import { atomicWriteJson, readJson } from "./jsonFile.js";
 
 // 加载配置:未知键丢弃,非法值回落默认,与默认值合并。
@@ -31,6 +32,10 @@ export function validateValue(def, v) {
   if (def.type === "enum") {
     return def.values.includes(v) ? v : def.def;
   }
+  if (def.type === "color") {
+    if (v === undefined || v === null) return def.def;
+    return isValidColor(String(v)) ? String(v) : def.def;
+  }
   return def.def;
 }
 
@@ -56,6 +61,9 @@ export function setConfigValue(configPath, cliKey, value, io = {}) {
     if (!Number.isFinite(n) || n < def.min || n > def.max) {
       return { error: `键 "${cliKey}" 需要整数(${def.min}-${def.max})` };
     }
+  }
+  if (def.type === "color" && !isValidColor(String(value))) {
+    return { error: `键 "${cliKey}" 需要命名色(red / brightCyan ...)、#RRGGBB 或 ansi256:0-255;置空恢复默认` };
   }
   const cfg = loadConfig(configPath, io);
   cfg[def.key] = parsed;

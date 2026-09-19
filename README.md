@@ -7,8 +7,8 @@
 在用 GLM、MiniMax、Kimi、DeepSeek 或各种 new-api 中转站跑 Claude Code?额度什么时候用完、什么时候重置,总得切网页去查。装上 cc-quota-line,余量直接躺在状态栏里,一眼可见:
 
 ```
-GLM ▇▇▇▇▇▇▇░░░ 72% · W ▇▇▇░░░░░░░ 30% · ↻19:19 · glm-5.3
-MiniMax ▇▇▇░░░░░░░ 30% · W ▇▇▇▇░░░░░░ 44% · ↻21:05 · MiniMax-M3
+GLM ███████░░░ 72% · W ███░░░░░░░ 30% · ↻19:19 · glm-5.3
+MiniMax ███░░░░░░░ 30% · W ████░░░░░░ 44% · ↻21:05 · MiniMax-M3
 ```
 
 中转站按余额计费?显示剩余金额:
@@ -86,6 +86,7 @@ cc-quota-line configure   # 交互式配置,实时预览
 - `↑/↓` 选择配置项,`Space/→` 调整,`←` 反向调整;带 `*` 的项表示与默认值不同
 
 - `theme` / `bar-width` / `warn-threshold` / `low-threshold` 的改动会即时反映在预览里
+- `color-*` 四项**仅在 theme 切到 custom 时出现**;选中后 `Space/→` 循环 16 命名色,`e` 直接输入十六进制色值(`#RRGGBB`,留空回车恢复默认)
 - `r` 恢复当前项默认值,`s` 保存,`q` 不保存退出(改过未保存会提示)
 
 也可以用命令行直接改(带校验、原子写入):
@@ -93,11 +94,17 @@ cc-quota-line configure   # 交互式配置,实时预览
 ```bash
 cc-quota-line config set bar-width 14      # 进度条加宽
 cc-quota-line config set theme mono        # 纯文本,无颜色
+cc-quota-line config set theme custom      # 自定义主题(配合下面四个颜色键)
+cc-quota-line config set color-ok "#87af87"        # 充足档:真彩色
+cc-quota-line config set color-warn ansi256:137    # 偏低档:256 色
+cc-quota-line config set color-danger brightRed    # 告急档:命名色
 cc-quota-line config set cache-ttl-seconds 300   # 缓存 5 分钟
 cc-quota-line config show                  # 查看当前全部配置
 cc-quota-line config unset bar-width       # 恢复单项默认
 cc-quota-line config reset --yes           # 全部恢复默认
 ```
+
+> 自定义颜色支持三种格式:16 命名色(`red` / `brightCyan` ...)、`#RRGGBB` 真彩色、`ansi256:0-255`。只设部分档位时,其余档位继承 dark 默认。configure TUI 里也能用 `←/→` 循环命名色实时预览。
 
 | 配置键 | 默认 | 取值范围 | 说明 |
 |---|---|---|---|
@@ -107,7 +114,11 @@ cc-quota-line config reset --yes           # 全部恢复默认
 | `timeout-ms` | 4000 | 1000 - 30000 | 接口请求超时 |
 | `warn-threshold` | 20 | 0 - 100 | 余量低于此值变红(%) |
 | `low-threshold` | 60 | 0 - 100 | 余量低于此值变黄(%) |
-| `theme` | dark | dark / light / mono | 配色主题 |
+| `theme` | dark | dark / light / mono / morandi / custom | 配色主题(dark 标准色 / light 浅色背景适配 / mono 无色 / morandi 莫兰迪色系 / custom 自定义) |
+| `color-ok` | (空) | 命名色 / `#RRGGBB` / `ansi256:N` | custom 主题:充足档颜色(空 = 继承 dark) |
+| `color-warn` | (空) | 同上 | custom 主题:偏低档颜色 |
+| `color-danger` | (空) | 同上 | custom 主题:告急档颜色 |
+| `color-info` | (空) | 同上 | custom 主题:模型名等辅助信息颜色 |
 | `debug` | false | true / false | 把接口原始响应打到 stderr 排查问题 |
 
 ## 常见问题

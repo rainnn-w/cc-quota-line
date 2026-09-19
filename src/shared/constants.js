@@ -30,7 +30,12 @@ export const CONFIG_KEYS = {
   "timeout-ms": { key: "timeoutMs", type: "integer", min: 1000, max: 30000, def: 4000 },
   "warn-threshold": { key: "warnThreshold", type: "integer", min: 0, max: 100, def: 20 },
   "low-threshold": { key: "lowThreshold", type: "integer", min: 0, max: 100, def: 60 },
-  theme: { key: "theme", type: "enum", values: ["dark", "light", "mono"], def: "dark" },
+  theme: { key: "theme", type: "enum", values: ["dark", "light", "mono", "morandi", "custom"], def: "dark" },
+  // 自定义主题四档颜色(仅 theme=custom 时生效;空 = 继承 dark 默认)
+  "color-ok": { key: "colorOk", type: "color", def: "" },
+  "color-warn": { key: "colorWarn", type: "color", def: "" },
+  "color-danger": { key: "colorDanger", type: "color", def: "" },
+  "color-info": { key: "colorInfo", type: "color", def: "" },
   debug: { key: "debug", type: "boolean", def: false },
 };
 

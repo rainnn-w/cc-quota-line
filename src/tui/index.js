@@ -4,14 +4,19 @@
 import readline from "node:readline";
 import { CONFIG_KEYS, CONFIG_PATH } from "../shared/constants.js";
 import { loadConfig, saveConfig } from "../shared/config.js";
+import { NAMED_COLORS } from "../shared/utils.js";
 import { RESET, BLUE, GRAY, WHITE, BOLD, TUI_COLORS, getTuiColors } from "../shared/ansi.js";
 import { buildViewModel } from "../core/status/viewModel.js";
 import { renderLine } from "../core/status/format.js";
 import { DEMO_QUOTA, DEMO_MONEY } from "./utils/demoData.js";
 
-// TUI 展示顺序与调整步长;preview 标记影响预览效果的键。
-const ITEMS = [
+// 全量配置项;color-* 四项仅在 theme=custom 时进入可见列表(避免"改了却不生效"的误导)
+export const ITEMS = [
   { kebab: "theme", step: null, preview: true },
+  { kebab: "color-ok", step: null, preview: true },
+  { kebab: "color-warn", step: null, preview: true },
+  { kebab: "color-danger", step: null, preview: true },
+  { kebab: "color-info", step: null, preview: true },
   { kebab: "bar-width", step: 1, preview: true },
   { kebab: "warn-threshold", step: 5, preview: true },
   { kebab: "low-threshold", step: 5, preview: true },
@@ -21,14 +26,24 @@ const ITEMS = [
   { kebab: "debug", step: null, preview: false },
 ].map((it) => ({ ...it, ...CONFIG_KEYS[it.kebab] }));
 
+export function visibleItems(config) {
+  const showColors = config.theme === "custom";
+  return ITEMS.filter((it) => it.type !== "color" || showColors);
+}
+
 function fmtValue(item, v) {
   if (item.type === "boolean") return v ? "true" : "false";
+  if (item.type === "color") return v ? String(v) : "(dark 默认)";
   return String(v);
 }
 
 function cycleValue(item, v) {
   if (item.type === "enum") return item.values[(item.values.indexOf(v) + 1) % item.values.length];
   if (item.type === "boolean") return !v;
+  if (item.type === "color") {
+    const seq = ["", ...Object.keys(NAMED_COLORS)];
+    return seq[(seq.indexOf(v) + 1) % seq.length];
+  }
   return v;
 }
 
@@ -46,10 +61,12 @@ function renderPreviewLine(demo, config) {
   }
 }
 
-export function render(config, index, message) {
+// input:色值内联输入状态 { item, buf };仅 color 项可用([e] 进入)
+export function render(config, index, message, input = null) {
   const lines = [];
   const colors = getTuiColors(config.theme);
   const rule = `${GRAY}┌─────────────────────────────────────────────────────┐${RESET}`;
+  const items = visibleItems(config);
 
   lines.push(`  ${BOLD}${colors.title}cc-quota-line Configuration${RESET}`);
   lines.push("");
@@ -63,8 +80,8 @@ export function render(config, index, message) {
   lines.push(`  ${colors.title}Settings:${RESET}`);
   lines.push("");
 
-  for (let i = 0; i < ITEMS.length; i++) {
-    const item = ITEMS[i];
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
     const sel = i === index;
     const cursor = sel ? `${BLUE}▸${RESET} ` : "  ";
     const nameColor = sel ? colors.selected : WHITE;
@@ -76,15 +93,22 @@ export function render(config, index, message) {
     );
   }
 
-  if (message) {
+  if (input) {
+    lines.push("");
+    const pad = "_".repeat(Math.max(0, 6 - input.buf.length));
+    lines.push(`  ${BOLD}${input.item.kebab}:${RESET} #${input.buf}${GRAY}${pad}${RESET}`);
+    lines.push(`  ${GRAY}[0-9a-f] 输入  [Enter] 应用(留空=恢复默认)  [Esc] 取消${RESET}`);
+  } else if (message) {
     const color = message.color === "green" ? colors.success : colors.error;
     lines.push("");
     lines.push(`  ${color}${message.text}${RESET}`);
   }
 
+  const cur = items[index];
+  const editHint = !input && cur?.type === "color" ? `  ${colors.title}[e]${RESET} 输入色值` : "";
   lines.push("");
   lines.push(
-    `  ${colors.title}[↑/↓]${RESET} 选择  ${colors.title}[Space/→]${RESET} 调整  ${colors.title}[←]${RESET} 减  ${colors.title}[r]${RESET} 恢复默认  ${colors.enabled}[s]${RESET} 保存  ${colors.error}[q]${RESET} 退出`
+    `  ${colors.title}[↑/↓]${RESET} 选择  ${colors.title}[Space/→]${RESET} 调整  ${colors.title}[←]${RESET} 减  ${colors.title}[r]${RESET} 恢复默认${editHint}  ${colors.enabled}[s]${RESET} 保存  ${colors.error}[q]${RESET} 退出`
   );
   return TUI_COLORS.clearScreen + TUI_COLORS.hideCursor + lines.join("\n") + "\n";
 }
@@ -99,9 +123,16 @@ export async function runTUI({ configPath = CONFIG_PATH } = {}) {
   let index = 0;
   let message = null;
   let dirty = false;
+  let input = null;
+
+  function clampIndex() {
+    const len = visibleItems(config).length;
+    if (index >= len) index = len - 1;
+  }
 
   function draw() {
-    process.stdout.write(render(config, index, message));
+    clampIndex();
+    process.stdout.write(render(config, index, message, input));
   }
 
   draw();
@@ -117,24 +148,72 @@ export async function runTUI({ configPath = CONFIG_PATH } = {}) {
       process.stdout.write(TUI_COLORS.showCursor);
     }
 
-    process.stdin.on("keypress", function onKey(str, key) {
-      message = null;
+    function quit() {
+      cleanup();
+      if (dirty) process.stdout.write(TUI_COLORS.clearScreen + "  已退出(未保存)。\n");
+      resolve();
+    }
 
-      if (key.ctrl && key.name === "c") {
+    function save() {
+      saveTUIConfig(config, configPath);
+      message = { text: "配置已保存!", color: "green" };
+      dirty = false;
+      draw();
+      setTimeout(() => {
         cleanup();
-        if (dirty) process.stdout.write(TUI_COLORS.clearScreen + "  已退出(未保存)。\n");
         resolve();
+      }, 800);
+    }
+
+    process.stdin.on("keypress", function onKey(str, key) {
+      // 色值输入模式:拦截全部按键,除 Ctrl+C
+      if (input) {
+        if (key.ctrl && key.name === "c") {
+          quit();
+          return;
+        }
+        if (key.name === "escape") {
+          input = null;
+          draw();
+          return;
+        }
+        if (key.name === "return" || str === "\r") {
+          const value = input.buf ? `#${input.buf}` : "";
+          if (config[input.item.key] !== value) {
+            config[input.item.key] = value;
+            dirty = true;
+          }
+          input = null;
+          draw();
+          return;
+        }
+        if (key.name === "backspace" || key.name === "delete") {
+          input = { ...input, buf: input.buf.slice(0, -1) };
+          draw();
+          return;
+        }
+        if (/^[0-9a-fA-F]$/.test(str) && input.buf.length < 6) {
+          input = { ...input, buf: input.buf + str.toLowerCase() };
+          draw();
+        }
         return;
       }
 
-      if (key.name === "q") {
-        cleanup();
-        if (dirty) process.stdout.write(TUI_COLORS.clearScreen + "  已退出(未保存)。\n");
-        resolve();
+      message = null;
+
+      if ((key.ctrl && key.name === "c") || key.name === "q") {
+        quit();
+        return;
+      }
+
+      if (key.name === "s") {
+        save();
         return;
       }
 
       if (key.name === "escape") return;
+
+      const items = visibleItems(config);
 
       if (key.name === "up") {
         index = Math.max(0, index - 1);
@@ -142,12 +221,19 @@ export async function runTUI({ configPath = CONFIG_PATH } = {}) {
         return;
       }
       if (key.name === "down") {
-        index = Math.min(ITEMS.length - 1, index + 1);
+        index = Math.min(items.length - 1, index + 1);
         draw();
         return;
       }
 
-      const item = ITEMS[index];
+      const item = items[index];
+
+      if (key.name === "e" && item?.type === "color") {
+        const m = /^#?([0-9a-fA-F]{6})$/.exec(config[item.key] ?? "");
+        input = { item, buf: m ? m[1].toLowerCase() : "" };
+        draw();
+        return;
+      }
 
       if (key.name === "r") {
         if (config[item.key] !== item.def) {
@@ -155,18 +241,6 @@ export async function runTUI({ configPath = CONFIG_PATH } = {}) {
           dirty = true;
         }
         draw();
-        return;
-      }
-
-      if (key.name === "s") {
-        saveTUIConfig(config, configPath);
-        message = { text: "配置已保存!", color: "green" };
-        dirty = false;
-        draw();
-        setTimeout(() => {
-          cleanup();
-          resolve();
-        }, 800);
         return;
       }
 
@@ -180,6 +254,7 @@ export async function runTUI({ configPath = CONFIG_PATH } = {}) {
         config[item.key] = next;
         dirty = true;
       }
+      // theme 切换会改变可见列表(增删 color 项),draw 内会 clamp index
       draw();
     });
   });

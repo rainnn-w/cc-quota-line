@@ -1,4 +1,4 @@
-import { RESET as R, DIM, CYAN } from "../../shared/ansi.js";
+import { DIM } from "../../shared/ansi.js";
 import { bar } from "../../shared/bar.js";
 import { makeTheme } from "./theme.js";
 
@@ -28,12 +28,12 @@ export function renderLine(vm, config = {}) {
     parts.push(`${col}${m.currency}${left}${RESET}${limitStr}`);
   } else if (s.type === "used") {
     const u = s.used >= 100 ? s.used.toFixed(0) : s.used.toFixed(2);
-    parts.push(`${t.mono ? "" : CYAN}used $${u}${RESET}`);
+    parts.push(`${t.info}used $${u}${RESET}`);
   } else {
     parts.push(`${DIMc}${s.hint}${RESET}`);
   }
 
-  if (vm.modelName) parts.push(`${t.mono ? "" : CYAN}${vm.modelName}${RESET}`);
+  if (vm.modelName) parts.push(`${t.info}${vm.modelName}${RESET}`);
   return parts.join(` ${DIMc}·${RESET} `);
 }
 

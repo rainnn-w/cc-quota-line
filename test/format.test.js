@@ -20,8 +20,8 @@ test("quota 双段渲染", () => {
   });
   const line = stripAnsi(renderLine(vm, {}));
   assert.ok(line.startsWith("GLM Vip4 · "));
-  assert.match(line, /▇▇▇▇▇▇▇░░░ 72% ↻\d{2}:\d{2}/);
-  assert.match(line, /W ▇▇▇▇░░░░░░ 42% ↻\d{2}:\d{2}/);
+  assert.match(line, /███████░░░ 72% ↻\d{2}:\d{2}/);
+  assert.match(line, /W ████░░░░░░ 42% ↻\d{2}:\d{2}/);
   assert.ok(line.endsWith("glm-5.1"));
 });
 
@@ -56,7 +56,7 @@ test("mono 主题无 ANSI;dark 默认带 ANSI", () => {
     provider: { key: "glm", label: "GLM" },
     data: { quotas: [{ leftPercent: 72, resetMs: null, kind: "5h" }] },
   });
-  assert.equal(renderLine(vm, { theme: "mono" }), "GLM · ▇▇▇▇▇▇▇░░░ 72% · glm-5.1");
+  assert.equal(renderLine(vm, { theme: "mono" }), "GLM · ███████░░░ 72% · glm-5.1");
   assert.ok(renderLine(vm, {}).includes("\x1b["));
 });
 
@@ -66,7 +66,38 @@ test("bar-width 配置生效", () => {
     provider: { key: "glm", label: "GLM" },
     data: { quotas: [{ leftPercent: 50, resetMs: null, kind: "5h" }] },
   });
-  assert.equal(renderLine(vm, { theme: "mono", barWidth: 4 }), "GLM · ▇▇░░ 50% · glm-5.1");
+  assert.equal(renderLine(vm, { theme: "mono", barWidth: 4 }), "GLM · ██░░ 50% · glm-5.1");
+});
+
+test("light / morandi 主题四档全部生效(不只 ok 档)", () => {
+  const vm = buildViewModel({
+    input,
+    provider: { key: "glm", label: "GLM" },
+    data: { quotas: [{ leftPercent: 72, resetMs: null, kind: "5h" }, { leftPercent: 35, resetMs: null, kind: "week" }] },
+  });
+  // light:ok=90 深灰、warn=256:130、info(model)=256:30
+  const light = renderLine(vm, { theme: "light" });
+  assert.ok(light.includes("\x1b[90m"), "ok 档应为深灰");
+  assert.ok(light.includes("\x1b[38;5;130m"), "warn 档应为深橙");
+  assert.ok(light.includes("\x1b[38;5;30m"), "model 应为深青");
+  assert.ok(!light.includes("\x1b[97m"), "light 不应再出现亮白");
+  // morandi:ok=#87d9c1、warn=#78c4ff、info=#c1cbff(truecolor)
+  const morandi = renderLine(vm, { theme: "morandi" });
+  assert.ok(morandi.includes("\x1b[38;2;135;217;193m"));
+  assert.ok(morandi.includes("\x1b[38;2;120;196;255m"));
+  assert.ok(morandi.includes("\x1b[38;2;193;203;255m"));
+});
+
+test("custom 主题:四档自定义生效,空档继承 dark", () => {
+  const vm = buildViewModel({
+    input,
+    provider: { key: "glm", label: "GLM" },
+    data: { quotas: [{ leftPercent: 72, resetMs: null, kind: "5h" }, { leftPercent: 35, resetMs: null, kind: "week" }] },
+  });
+  const out = renderLine(vm, { theme: "custom", colorOk: "#87af87", colorWarn: "ansi256:137" });
+  assert.ok(out.includes("\x1b[38;2;135;175;135m"), "hex ok 档");
+  assert.ok(out.includes("\x1b[38;5;137m"), "ansi256 warn 档");
+  assert.ok(out.includes("\x1b[36m"), "未设置的 info 档应继承 dark 青色");
 });
 
 test("--json 输出结构", () => {

@@ -56,3 +56,21 @@ test("unset 恢复默认;reset 保留 install", () => {
   assert.equal(cfg.theme, "dark");
   assert.deepEqual(cfg.install, { installed: true });
 });
+
+test("color 键:合法 spec 写入、非法报错、置空恢复、坏值回落", () => {
+  const f = tmpFile();
+  assert.equal(setConfigValue(f, "color-ok", "#87af87").ok, true);
+  assert.equal(setConfigValue(f, "color-warn", "ansi256:130").ok, true);
+  assert.equal(setConfigValue(f, "color-danger", "brightRed").ok, true);
+  assert.ok(setConfigValue(f, "color-info", "pink").error);
+  assert.ok(setConfigValue(f, "color-info", "#12g34z").error);
+  const cfg = loadConfig(f);
+  assert.equal(cfg.colorOk, "#87af87");
+  assert.equal(cfg.colorWarn, "ansi256:130");
+  assert.equal(cfg.colorDanger, "brightRed");
+  assert.equal(cfg.colorInfo, "");
+  assert.equal(setConfigValue(f, "color-ok", "").ok, true);
+  assert.equal(loadConfig(f).colorOk, "");
+  fs.writeFileSync(f, JSON.stringify({ colorOk: "oops" }));
+  assert.equal(loadConfig(f).colorOk, "");
+});
