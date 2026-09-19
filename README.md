@@ -81,7 +81,7 @@ cc-quota-line help                    # 全部命令
 cc-quota-line configure   # 交互式配置,实时预览
 ```
 
-![image-20260919111138213](https://cdn.jsdelivr.net/gh/rainnn-w/Pictures@main/blog/202609191111454.png)
+![image-20260919111138213](https://cdn.jsdelivr.net/gh/rainnn-w/Pictures@main/blog/202609191111454.png![image-20260919184742330](https://cdn.jsdelivr.net/gh/rainnn-w/Pictures@main/blog/202609191847724.png)
 
 - `↑/↓` 选择配置项,`Space/→` 调整,`←` 反向调整;带 `*` 的项表示与默认值不同
 
