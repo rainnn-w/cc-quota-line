@@ -33,6 +33,8 @@ xxx · $8.42 left / $10 · claude-opus-4-6
 
 需要 Node.js ≥ 18:
 
+（此种安装方法暂不可用）
+
 ```bash
 npm install -g cc-quota-line
 cc-quota-line install   # 接管状态栏
@@ -68,8 +70,6 @@ cc-quota-line install
 
 ```bash
 cc-quota-line                          # 手动看一次(TTY 下多行展示)
-echo '{"model":{"display_name":"X"}}' | cc-quota-line --json   # 结构化输出
-cc-quota-line uninstall               # 卸载,还原 statusLine
 cc-quota-line help                    # 全部命令
 ```
 
