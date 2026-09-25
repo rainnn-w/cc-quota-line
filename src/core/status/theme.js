@@ -22,7 +22,7 @@ const THEMES = {
     ok: parseColor("#87d9c1"),
     warn: parseColor("#78c4ff"),
     danger: parseColor("#ffad9d"),
-    info: parseColor("#a6b4fc"),
+    info: parseColor("#c1cbff"),
   },
 };
 

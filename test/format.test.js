@@ -75,11 +75,11 @@ test("light / morandi 主题四档全部生效(不只 ok 档)", () => {
     provider: { key: "glm", label: "GLM" },
     data: { quotas: [{ leftPercent: 72, resetMs: null, kind: "5h" }, { leftPercent: 35, resetMs: null, kind: "week" }] },
   });
-  // light:ok=90 深灰、warn=256:130、info(model)=256:30
+  // light:ok=#3fb950 深绿、warn=#ff7e1e 深橙、info(model)=#0969DA 深蓝(均 truecolor)
   const light = renderLine(vm, { theme: "light" });
-  assert.ok(light.includes("\x1b[90m"), "ok 档应为深灰");
-  assert.ok(light.includes("\x1b[38;5;130m"), "warn 档应为深橙");
-  assert.ok(light.includes("\x1b[38;5;30m"), "model 应为深青");
+  assert.ok(light.includes("\x1b[38;2;63;185;80m"), "ok 档应为深绿");
+  assert.ok(light.includes("\x1b[38;2;255;126;30m"), "warn 档应为深橙");
+  assert.ok(light.includes("\x1b[38;2;9;105;218m"), "model 应为深蓝");
   assert.ok(!light.includes("\x1b[97m"), "light 不应再出现亮白");
   // morandi:ok=#87d9c1、warn=#78c4ff、info=#c1cbff(truecolor)
   const morandi = renderLine(vm, { theme: "morandi" });
@@ -97,7 +97,7 @@ test("custom 主题:四档自定义生效,空档继承 dark", () => {
   const out = renderLine(vm, { theme: "custom", colorOk: "#87af87", colorWarn: "ansi256:137" });
   assert.ok(out.includes("\x1b[38;2;135;175;135m"), "hex ok 档");
   assert.ok(out.includes("\x1b[38;5;137m"), "ansi256 warn 档");
-  assert.ok(out.includes("\x1b[36m"), "未设置的 info 档应继承 dark 青色");
+  assert.ok(out.includes("\x1b[38;2;88;166;255m"), "未设置的 info 档应继承 dark 天空蓝");
 });
 
 test("--json 输出结构", () => {
