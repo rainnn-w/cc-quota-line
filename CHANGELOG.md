@@ -1,7 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.1.1
 
+- 发布至 npm(`npm install -g cc-quota-line`),README 开放 npm 安装说明。
+- 修复 morandi 主题 info 档色值笔误(`#a6b4fc` → `#c1cbff`,与文档一致)。
 - 新增自定义颜色:`theme=custom` + `color-ok` / `color-warn` / `color-danger` / `color-info` 四个配置键,支持 16 命名色、`#RRGGBB` 真彩色、`ansi256:N`;未设置的档位继承 dark 默认;TUI 中 color-* 项仅在 theme=custom 时出现,可循环命名色,或按 `e` 内联输入十六进制色值实时预览。
 - 修复主题切换只影响单档颜色:light 主题此前仅把"充足"档换成亮白,warn/danger/model 与 dark 完全相同;现改为每套主题完整配色(ok/warn/danger/info 四档同步切换),模型名与 used 走主题 info 色(此前硬编码青色)。
 - 新增 `morandi` 主题:莫兰迪色系(薄荷绿 `#87d9c1` / 雾蓝 `#78c4ff` / 杏粉 `#ffad9d` / 雾紫 `#c1cbff`);`light` 主题重做为浅色背景终端适配(深绿/深橙/深红/深蓝)。

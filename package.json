@@ -1,6 +1,6 @@
 {
   "name": "cc-quota-line",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Claude Code 多 Provider 余量状态栏(零依赖,本地安装)",
   "type": "module",
   "bin": {
